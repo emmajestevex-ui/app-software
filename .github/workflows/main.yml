@@ -1,92 +1,14 @@
-name: Build GLLYZI APP IPA
+name: 'GLLYZI - COMPILACION ANTIGUA DESACTIVADA'
 
+# Esta compilación era una copia antigua de Glizzy.
+# No utilizarla para Software Ch3at: el workflow actualizado es
+# "Software Ch3at - SQL, Panel y IPA".
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-      - gllyzi-net
 
 jobs:
-  build:
-    name: Build unsigned IPA
-    runs-on: macos-15
-
+  aviso:
+    runs-on: ubuntu-latest
     steps:
-      - name: Descargar proyecto
-        uses: actions/checkout@v4
-
-      - name: Mostrar versión de Xcode
-        run: xcodebuild -version
-
-      - name: Mostrar schemes disponibles
-        run: xcodebuild -project ThreeOneOSFive.xcodeproj -list
-
-      - name: Compilar GLLYZI APP
-        run: |
-          set -o pipefail
-          xcodebuild \
-            -project ThreeOneOSFive.xcodeproj \
-            -scheme 3105 \
-            -configuration Release \
-            -sdk iphoneos \
-            -derivedDataPath build \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY="" \
-            build 2>&1 | tee xcodebuild.log
-
-      - name: Mostrar errores de Xcode
-        if: failure()
-        run: |
-          if [ -f xcodebuild.log ]; then
-            grep -Ei "error:|fatal error:" xcodebuild.log | tail -80 | while IFS= read -r line; do
-              printf '::error::%s\n' "$line"
-            done
-          fi
-
-      - name: Buscar aplicación compilada
-        run: |
-          echo "Buscando .app..."
-          find build -type d -name "*.app" -print
-
-      - name: Crear IPA unsigned
-        run: |
-          APP_PATH=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -type d -name "*.app" | head -1)
-
-          if [ -z "$APP_PATH" ]; then
-            echo "ERROR: No se encontró la aplicación compilada."
-            exit 1
-          fi
-
-          echo "App encontrada en: $APP_PATH"
-
-          mkdir -p Payload
-          cp -R "$APP_PATH" Payload/
-
-          zip -r GLLYZI_APP_unsigned.ipa Payload
-
-          echo "IPA creada correctamente:"
-          ls -lh GLLYZI_APP_unsigned.ipa
-
-      - name: Subir IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: GLLYZI-APP-unsigned
-          path: GLLYZI_APP_unsigned.ipa
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: Empaquetar panel admin
-        run: |
-          set -euo pipefail
-          zip -r GLLYZI_ADMIN_panel.zip admin supabase/setup_all.sql supabase/licenses_setup.sql supabase/remote_content_setup.sql supabase/admin_emails_setup.sql
-          ls -lh GLLYZI_ADMIN_panel.zip
-
-      - name: Subir panel admin
-        uses: actions/upload-artifact@v4
-        with:
-          name: GLLYZI-APP-admin-panel
-          path: GLLYZI_ADMIN_panel.zip
-          if-no-files-found: error
-          retention-days: 30
+      - name: 'Compilacion antigua desactivada'
+        run: echo 'No usar esta compilacion; ejecuta Software Ch3at - SQL, Panel y IPA.'

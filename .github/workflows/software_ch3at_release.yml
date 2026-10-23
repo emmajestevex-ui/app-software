@@ -13,6 +13,8 @@ on:
     paths:
       - 'branding/**'
       - 'tools/software_ch3at_rebrand.py'
+      - 'ThreeOneOSFive/App.swift'
+      - 'App.swift'
       - '.github/workflows/software_ch3at_release.yml'
 
 permissions:
@@ -77,6 +79,14 @@ jobs:
         run: |
           mkdir -p "$GITHUB_WORKSPACE/project"
           tar -xzf /tmp/softw-source/software-ch3at-source.tgz -C "$GITHUB_WORKSPACE/project"
+      - name: 'Verificar login de Software Ch3at antes de compilar'
+        working-directory: project
+        run: |
+          grep -Fq 'TextField("SOFTCH3AT-ABCD-EF12-3456", text: $key)' ThreeOneOSFive/App.swift
+          if grep -Eq 'TextField\("(GLIZZY|GLLYZI|GREEG)-' ThreeOneOSFive/App.swift; then
+            echo 'ERROR: la app todavía muestra el prefijo de otra empresa'
+            exit 1
+          fi
       - name: 'Compilar aplicacion iOS'
         working-directory: project
         run: |
@@ -99,7 +109,7 @@ jobs:
           zip -qr ../Software_Ch3at_unsigned.ipa Payload
       - uses: actions/upload-artifact@v4
         with:
-          name: Software-Ch3at-IPA-SIN-FIRMA
+          name: Software-Ch3at-IPA-LOGIN-CORREGIDO
           path: Software_Ch3at_unsigned.ipa
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
